@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "150406492600",
+    "project_id": "todocollab-4282f",
+    "storage_bucket": "todocollab-4282f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150406492600:android:8918dc05d1d4e7e5efdf4d",
+        "android_client_info": {
+          "package_name": "com.example.task_collaborator_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEjUAH7n2EtpyButuznKHc5UXUKIyU2fE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150406492600:android:cc6b337fc49c1bffefdf4d",
+        "android_client_info": {
+          "package_name": "com.example.your_task_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEjUAH7n2EtpyButuznKHc5UXUKIyU2fE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
