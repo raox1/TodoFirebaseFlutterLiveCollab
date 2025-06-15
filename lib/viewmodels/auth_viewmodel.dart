@@ -73,4 +73,10 @@ Future<void> signUp(String email, String password) async {
       notifyListeners();
     }
   }
+  void clearErrorMessage() {
+    if (_errorMessage != null) {
+      _errorMessage = null;
+      notifyListeners(); // Notify listeners that the error message has been cleared
+    }
+  }
 }

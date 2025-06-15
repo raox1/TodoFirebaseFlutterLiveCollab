@@ -132,20 +132,43 @@ class TaskViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> updateTaskStatus(Task task, bool isCompleted) async {
+Future<void> updateTaskStatus(Task task, bool isCompleted) async {
     _errorMessage = null;
     _isLoading = true;
     notifyListeners();
 
     try {
+      // 1. Update Firestore
       await _firestore.collection('tasks').doc(task.id).update({'isCompleted': isCompleted});
 
-      await _localDb.updateTask(LocalTasksCompanion(
-        id: drift.Value(task.id),
-        isCompleted: drift.Value(isCompleted),
-      ));
+      // 2. Update Local DB (Drift)
+      // Get the existing task from the local database
+      final existingLocalTasks = await (_localDb.select(_localDb.localTasks)
+            ..where((tbl) => tbl.id.equals(task.id))) // Use task.id
+          .get();
 
-      await _loadTasksFromLocalDb();
+      if (existingLocalTasks.isNotEmpty) {
+        final existingLocalTask = existingLocalTasks.first;
+
+        // Create a LocalTasksCompanion using existing values,
+        // but with updated isCompleted status
+        final updatedCompanion = LocalTasksCompanion(
+          id: drift.Value(existingLocalTask.id),
+          title: drift.Value(existingLocalTask.title),
+          description: drift.Value(existingLocalTask.description),
+          createdBy: drift.Value(existingLocalTask.createdBy),
+          collaborators: drift.Value(existingLocalTask.collaborators),
+          isCompleted: drift.Value(isCompleted), // This is the updated part
+          createdAt: drift.Value(existingLocalTask.createdAt),
+        );
+
+        await _localDb.updateTask(updatedCompanion);
+        await _loadTasksFromLocalDb(); // Reload to reflect local changes
+      } else {
+        debugPrint('Warning: Local task not found for ID: ${task.id}. Could not update local DB status.');
+        // Optionally, if the task is somehow missing locally, you might want to re-add it
+        // based on the Firestore data or handle this scenario appropriately.
+      }
     } catch (e) {
       _errorMessage = 'Failed to update task status: $e';
       debugPrint('Error updating task status: $e');
@@ -265,6 +288,30 @@ class TaskViewModel with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+ 
+ Future<void> deleteTask(String taskId) async {
+    _isLoading = true;
+    _errorMessage = null; // Clear previous error
+    notifyListeners();
+
+    try {
+      // Simulate API call to delete task from your backend
+      await Future.delayed(const Duration(seconds: 1));
+      // Remove the task from the local list upon successful deletion
+      _tasks.removeWhere((task) => task.id == taskId);
+    } catch (e) {
+      _errorMessage = 'Failed to delete task: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners(); // Notify listeners whether success or failure
+    }
+  }
+    void clearErrorMessage() {
+    if (_errorMessage != null) {
+      _errorMessage = null;
+      notifyListeners(); // Notify listeners that the error message has been cleared
     }
   }
 }
